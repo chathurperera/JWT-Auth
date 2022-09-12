@@ -43,7 +43,7 @@
             password,
           }),
         }).then((res) => res.json());
-        if (response.status === "Okay") {
+        if (response.status === "success") {
           localStorage.setItem('token',response.data)
           alert("Success");
         } else {
