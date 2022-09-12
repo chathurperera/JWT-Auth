@@ -38,6 +38,7 @@ app.post("/api/register", async (req, res) => {
         .status(500)
         .json({ status: "error", error: "User already in use" });
     }
+    
     res.status(500).json({ status: "error", error: error });
   }
 });
