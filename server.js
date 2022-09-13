@@ -6,8 +6,11 @@ const User = require("./model/users");
 const jwt = require("jsonwebtoken");
 const bycrypt = require("bcryptjs");
 const PORT = process.env.PORT || 5000;
+
 app.use(express.json());
 app.use(express.static("./public"));
+
+const JWT_SECRET = "sado2o36oe&owhp21678y63248g908O&*@%$^!&@ljio74825d237b@da";
 
 app.post("/api/register", async (req, res) => {
   const { username, password: plainTextPassword } = req.body;
@@ -38,9 +41,33 @@ app.post("/api/register", async (req, res) => {
         .status(500)
         .json({ status: "error", error: "User already in use" });
     }
-    
+
     res.status(500).json({ status: "error", error: error });
   }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await User.findOne({ username }).lean();
+
+  if (!user) {
+    return res
+      .status(401)
+      .json({ status: "Error", error: "Invalid username/password" });
+  }
+
+  if (await bycrypt.compare(password, user.password)) {
+    const token = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+      },
+      JWT_SECRET
+    );
+    return res.status(200).json({ status: "success", data: token });
+  }
+  res.status(401).json({ status: "error", error: "Invalid username/password" });
 });
 
 const start = async () => {
